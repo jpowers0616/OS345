@@ -43,10 +43,10 @@ typedef unsigned int uint32;
 
 typedef struct
 {
-   uint16	free;	         	// # of sectors free
-   uint16	used;	         	// # of sectors used
-   uint16	bad;	         	// # of bad sectors
-   uint16	size;	         	// Total # of sectors in RAM disk
+	uint16	free;	         	// # of sectors free
+	uint16	used;	         	// # of sectors used
+	uint16	bad;	         	// # of bad sectors
+	uint16	size;	         	// Total # of sectors in RAM disk
 } DiskSize;
 
 
@@ -112,9 +112,9 @@ typedef struct
 #pragma pack(push,1)			// BYTE align in memory (no padding)
 typedef struct
 {								// (total 16 bits--a uint16)
-	uint16 sec: 5;				// low-order 5 bits are the seconds
-	uint16 min: 6;				// next 6 bits are the minutes
-	uint16 hour: 5;				// high-order 5 bits are the hour
+	uint16 sec : 5;				// low-order 5 bits are the seconds
+	uint16 min : 6;				// next 6 bits are the minutes
+	uint16 hour : 5;				// high-order 5 bits are the hour
 } FATTime;
 #pragma pack(pop)				// End of strict alignment
 
@@ -123,9 +123,9 @@ typedef struct
 #pragma pack(push,1)			// BYTE align in memory (no padding)
 typedef struct
 {								// (total 16 bits--a uint16)
-   uint16 day: 5;				// low-order 5 bits are the day
-   uint16 month: 4;				// next 4 bits are the month
-   uint16 year: 7;				// high-order 7 bits are the year
+	uint16 day : 5;				// low-order 5 bits are the day
+	uint16 month : 4;				// next 4 bits are the month
+	uint16 year : 7;				// high-order 7 bits are the year
 } FATDate;
 #pragma pack(pop)				// End of strict alignment
 
@@ -145,8 +145,8 @@ typedef struct
 
 typedef struct
 {
-   int error;
-   char error_msg[32];
+	int error;
+	char error_msg[32];
 } FMSERROR;
 
 
@@ -249,3 +249,4 @@ int fmsDiskStats(DiskSize* dskSize);
 #define UNDEFINED_MSG "Undefined Error"
 
 #endif // __os345fat_h__
+
