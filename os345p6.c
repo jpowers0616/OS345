@@ -1650,7 +1650,7 @@ int fmsMask(char* mask, char* name, char* ext)
 		{
 			if (mask[i] == '*') return 1;
 			if (!mask[i] && (ext[j] == ' ')) return 1;
-			if ((mask[i] == '?') && (ext[i] != ' ')) continue;
+			if ((mask[i] == '?') && (ext[j] != ' ')) continue;
 			if ((mask[i] != toupper(ext[j])) && (mask[i] != tolower(ext[j]))) return 0;
 		}
 		return 1;

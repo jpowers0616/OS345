@@ -83,18 +83,18 @@ extern int curTask;							// current task #
 // ***********************************************************************
 //  helper functions
 //
-int Valid(short entryCode)
+int Valid(short code)
 {
-	if (entryCode == FAT_BAD) return ERR54;
-	if (entryCode < 2) return ERR54;
+	if (code == FAT_BAD) return ERR54;
+	if (code < 2) return ERR54;
 	return 0;
 }
 
 
-void setFatEntryBoth(int FATindex, unsigned short FAT12ClusEntryVal)
+void setFatEntryBoth(int index, unsigned short entryVal)
 {
-	setFatEntry(FATindex, FAT12ClusEntryVal, FAT1);
-	setFatEntry(FATindex, FAT12ClusEntryVal, FAT2);
+	setFatEntry(index, entryVal, FAT1);
+	setFatEntry(index, entryVal, FAT2);
 	return;
 }
 
@@ -105,7 +105,7 @@ int getAvlCluster()
 	char buffer[BYTES_PER_SECTOR];
 	for (int i = 2; i < CLUSTERS_PER_DISK; i++)
 	{
-		if (!getFatEntry(i, FAT1)) // If FAT entry is 0x000, we can use it
+		if (!getFatEntry(i, FAT1))// if 0x0000
 		{
 			sector = C_2_S(i);
 			memset(buffer, 0, BYTES_PER_SECTOR * sizeof(char));
@@ -113,11 +113,11 @@ int getAvlCluster()
 			return i;
 		}
 	}
-	return ERR65; // No empty entries found, so file space is full
+	return ERR65;
 }
 
 
-int resetChain(unsigned short entryStart)
+int cleanChain(unsigned short entryStart)
 {
 	int error;
 	unsigned short entry = entryStart;
@@ -132,13 +132,12 @@ int resetChain(unsigned short entryStart)
 }
 
 
-int c_str_toupper(char* s)
+void c_str_toupper(char* str)
 {
-	for (int i = 0; i < strlen(s); i++)
+	for (int i = 0; i < strlen(str); i++)
 	{
-		s[i] = toupper(s[i]);
+		str[i] = toupper(str[i]);
 	}
-	return (int)strlen(s);
 }
 
 
@@ -357,8 +356,24 @@ int fmsDeleteFile(char* fileName)
 	char buffer[BYTES_PER_SECTOR];
 	unsigned short dirCluster, dirSector;
 
+	DirEntry check;
+	if ((error = fmsGetDirEntry(fileName, &check)) < 0) return error;
+	if (check.attributes == DIRECTORY)
+	{
+		int index = 2;
+		DirEntry blank;
+		if ((error = fmsGetNextDirEntry(&index, "*.*", &blank, check.startCluster)) < 0)
+		{
+			//good delete it
+		}
+		else
+		{
+			return ERR69;
+		}
+	}
+
 	dirCluster = CDIR;
-	DirEntry dirEntry;
+	DirEntry dirEntry;	
 	while (dirCluster != FAT_EOC)
 	{
 		if (dirCluster)
@@ -380,7 +395,7 @@ int fmsDeleteFile(char* fileName)
 			{
 				dirEntry.name[0] = 0xe5;
 				memcpy(&buffer[bufferIndex], &dirEntry, entrySize);
-				resetChain(dirEntry.startCluster);
+				cleanChain(dirEntry.startCluster);
 				if ((error = fmsWriteSector(&buffer, dirSector)) < 0) return error;
 			}
 		}
